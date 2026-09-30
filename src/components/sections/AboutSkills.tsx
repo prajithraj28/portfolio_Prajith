@@ -37,7 +37,7 @@ export function About() {
         <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
           {[["B.E. ECE", "2023–2027"], ["CGPA", "7.8/10"], ["Internships", "2"], ["Hackathon results", "4"]].map(([k, v]) => (
             <div key={k} className="bg-background/90 p-5 text-center">
-              <p className="font-display text-3xl font-bold text-foreground"><CountUp value={v} /></p>
+              <p className="font-display text-3xl font-bold text-foreground"><CountUp value={v ?? ""} /></p>
               <p className="mono-label mt-1">{k}</p>
             </div>
           ))}

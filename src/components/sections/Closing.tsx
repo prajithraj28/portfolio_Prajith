@@ -73,8 +73,8 @@ export function Achievements() {
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal className="relative w-full max-w-lg rounded-[32px] border border-line-strong bg-bg2 p-8">
               <button onClick={() => setSel(null)} aria-label="Close" className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full border border-line"><X className="size-5" /></button>
               <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-line-strong text-muted-foreground"><ImageIcon className="size-5" /></div>
-              <p className="mt-6 font-display text-3xl font-bold">{achievements[sel].title}</p>
-              <p className="mt-2 text-muted-foreground">{achievements[sel].detail}</p>
+              <p className="mt-6 font-display text-3xl font-bold">{achievements[sel]!.title}</p>
+              <p className="mt-2 text-muted-foreground">{achievements[sel]!.detail}</p>
             </motion.div>
           </motion.div>
         )}
