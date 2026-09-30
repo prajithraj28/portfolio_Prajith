@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
 import { Mail, Linkedin, Github, ArrowUp, X, Image as ImageIcon, Trophy, Medal, Award, ScrollText } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import { FadeIn, GhostButton, MonoLabel, PrimaryButton, Tilt, ChipTag } from "@/components/ui/kit";
@@ -113,7 +113,7 @@ export function Journey() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [lit, setLit] = useState(0);
   const width = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  scrollYProgress.on("change", (v) => { const n = Math.round(v * (journey.length - 1)); setLit((p) => (p === n ? p : n)); });
+  useMotionValueEvent(scrollYProgress, "change", (v) => { const n = Math.round(v * (journey.length - 1)); setLit((p) => (p === n ? p : n)); });
   return (
     <section ref={ref} aria-label="Engineering journey" className="relative z-10 h-[220vh] bg-bg2">
       <div className="sticky top-0 flex h-screen flex-col justify-center gap-12 overflow-hidden px-5 sm:px-8 md:px-10">

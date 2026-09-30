@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
 import { Activity, Cpu, Radio, ToggleRight, ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
 import { AnimatedText, ChipTag, CountUp, FadeIn, FlowDiagram, GhostButton, MonoLabel, Tilt } from "@/components/ui/kit";
@@ -56,8 +56,7 @@ export function Philosophy() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [active, setActive] = useState(0);
-  useTransform(scrollYProgress, (v) => { const a = Math.min(3, Math.floor(v * 4)); if (a !== active) setActive(a); return v; }).get();
-  scrollYProgress.on?.("change", (v) => { const a = Math.min(3, Math.max(0, Math.floor(v * 4))); setActive((p) => (p === a ? p : a)); });
+  useMotionValueEvent(scrollYProgress, "change", (v) => { const a = Math.min(3, Math.max(0, Math.floor(v * 4))); setActive((p) => (p === a ? p : a)); });
   const line = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
   return (
     <section ref={ref} aria-label="Engineering philosophy" className="relative h-[260vh] bg-bg2">
