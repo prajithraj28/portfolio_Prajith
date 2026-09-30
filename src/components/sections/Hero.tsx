@@ -94,7 +94,7 @@ export function SignalMarquee() {
   const r2 = [...marqueeRow2, ...marqueeRow2, ...marqueeRow2];
   return (
     <section ref={ref} aria-label="Hardware gallery" className="relative flex flex-col gap-3 overflow-hidden pb-10 pt-24 sm:pt-32 md:pt-40">
-      <div className="flex gap-3" style={{ transform: `translateX(${offset - 1200}px)`, willChange: "transform" }}>{r1.map((c, i) => <Tile key={i} caption={c} i={i} />)}</div>
+      <div className="flex gap-3" style={{ transform: `translateX(${offset - 200}px)`, willChange: "transform" }}>{r1.map((c, i) => <Tile key={i} caption={c} i={i} />)}</div>
       <div className="flex gap-3" style={{ transform: `translateX(${-(offset - 200)}px)`, willChange: "transform" }}>{r2.map((c, i) => <Tile key={i} caption={c} i={i + 5} />)}</div>
     </section>
   );

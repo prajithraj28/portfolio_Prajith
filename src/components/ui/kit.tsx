@@ -12,7 +12,7 @@ export function FadeIn({
   return (
     <motion.div
       className={className}
-      style={style}
+      style={style as any}
       initial={reduce ? { opacity: 0 } : { opacity: 0, x, y }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: "50px", amount: 0 }}
@@ -179,13 +179,13 @@ export function CountUp({ value }: { value: string }) {
   const [n, setN] = useState(0);
   useEffect(() => {
     if (!inView || !m) return;
-    const target = parseFloat(m[2]);
+    const target = parseFloat(m[2] ?? "0");
     let raf = 0; const t0 = performance.now();
     const step = (t: number) => { const p = Math.min(1, (t - t0) / 1100); setN(target * (1 - Math.pow(1 - p, 3))); if (p < 1) raf = requestAnimationFrame(step); };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!m) return <span ref={ref}>{value}</span>;
-  const dec = m[2].includes(".") ? 1 : 0;
+  const dec = (m[2] ?? "").includes(".") ? 1 : 0;
   return <span ref={ref}>{m[1]}{inView ? n.toFixed(dec) : "0"}{m[3]}</span>;
 }

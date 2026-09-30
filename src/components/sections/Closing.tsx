@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
 import { Mail, Linkedin, Github, ArrowUp, X, Image as ImageIcon, Trophy, Medal, Award, ScrollText } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import { FadeIn, GhostButton, MonoLabel, PrimaryButton, Tilt, ChipTag } from "@/components/ui/kit";
@@ -73,8 +73,8 @@ export function Achievements() {
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal className="relative w-full max-w-lg rounded-[32px] border border-line-strong bg-bg2 p-8">
               <button onClick={() => setSel(null)} aria-label="Close" className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full border border-line"><X className="size-5" /></button>
               <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-line-strong text-muted-foreground"><ImageIcon className="size-5" /></div>
-              <p className="mt-6 font-display text-3xl font-bold">{achievements[sel].title}</p>
-              <p className="mt-2 text-muted-foreground">{achievements[sel].detail}</p>
+              <p className="mt-6 font-display text-3xl font-bold">{achievements[sel]!.title}</p>
+              <p className="mt-2 text-muted-foreground">{achievements[sel]!.detail}</p>
             </motion.div>
           </motion.div>
         )}
@@ -113,7 +113,7 @@ export function Journey() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [lit, setLit] = useState(0);
   const width = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  scrollYProgress.on("change", (v) => { const n = Math.round(v * (journey.length - 1)); setLit((p) => (p === n ? p : n)); });
+  useMotionValueEvent(scrollYProgress, "change", (v) => { const n = Math.round(v * (journey.length - 1)); setLit((p) => (p === n ? p : n)); });
   return (
     <section ref={ref} aria-label="Engineering journey" className="relative z-10 h-[220vh] bg-bg2">
       <div className="sticky top-0 flex h-screen flex-col justify-center gap-12 overflow-hidden px-5 sm:px-8 md:px-10">

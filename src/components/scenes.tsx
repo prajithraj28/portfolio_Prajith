@@ -124,13 +124,13 @@ function EvCharger() {
       <text x="90" y="134" textAnchor="middle" fontSize="8" fill={M} style={mono}>CTRL</text>
       <path id="cable" d="M130 170 C200 170 220 230 290 200" stroke={M} strokeWidth="5" fill="none" />
       {[0, 1, 2].map((i) => (
-        <motion.circle key={i} r="4" fill={S} className="glow-dot" style={{ offsetPath: "path('M130 170 C200 170 220 230 290 200')" } as React.CSSProperties}
+        <motion.circle key={i} r="4" fill={S} className="glow-dot" style={{ offsetPath: "path('M130 170 C200 170 220 230 290 200')" } as any}
           animate={{ offsetDistance: ["0%", "100%"] }} transition={{ duration: 1.8, delay: i * 0.6, repeat: Infinity, ease: "linear" }} />
       ))}
       <path d="M270 210 Q300 160 360 160 H410 Q450 165 455 210 V230 H270 Z" fill="var(--bg-2)" stroke={L} />
       <circle cx="310" cy="232" r="16" fill="var(--background)" stroke={L} />
       <circle cx="420" cy="232" r="16" fill="var(--background)" stroke={L} />
-      <path d="M90 70 V30 H300" stroke={RF} strokeDasharray="4 4" />
+      <path d="M90 70 V30 H300" stroke={RF} strokeDasharray="4 4" fill="none" />
       <path d="M300 18 a14 14 0 0 1 26 -4 a12 12 0 0 1 18 12 h-50 a8 8 0 0 1 6 -8z" fill="var(--panel)" stroke={RF} />
       <motion.circle r="3" fill={RF} animate={{ cx: [90, 90, 300], cy: [70, 30, 30] }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} />
       <text x="360" y="30" fontSize="9" fill={M} style={mono}>CLOUD SYNC</text>
