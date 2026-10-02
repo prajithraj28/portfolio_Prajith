@@ -86,15 +86,15 @@ export function AnimatedText({ text, className }: { text: string; className?: st
 
 const sizes = { md: "px-8 py-3 sm:px-10 sm:py-3.5 md:px-12 md:py-4 text-xs sm:text-sm md:text-base", sm: "px-5 py-2.5 text-xs" };
 
-export function PrimaryButton({ children, href, size = "md", className, type, onClick, disabled }: { children: ReactNode; href?: string; size?: "md" | "sm"; className?: string; type?: "submit" | "button"; onClick?: () => void; disabled?: boolean }) {
+export function PrimaryButton({ children, href, size = "md", className, type, onClick, disabled, target, rel, download }: { children: ReactNode; href?: string; size?: "md" | "sm"; className?: string; type?: "submit" | "button"; onClick?: () => void; disabled?: boolean; target?: string; rel?: string; download?: boolean }) {
   const cls = cn("btn-primary group inline-flex min-h-11 items-center justify-center gap-2 rounded-full font-medium uppercase tracking-widest transition-shadow duration-300 disabled:opacity-60", sizes[size], className);
   const inner = <>{children}<ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" /></>;
-  return href ? <a href={href} className={cls}>{inner}</a> : <button type={type ?? "button"} onClick={onClick} disabled={disabled} className={cls}>{inner}</button>;
+  return href ? <a href={href} className={cls} target={target} rel={rel} download={download}>{inner}</a> : <button type={type ?? "button"} onClick={onClick} disabled={disabled} className={cls}>{inner}</button>;
 }
 
-export function GhostButton({ children, href, size = "md", className, download, onClick, external }: { children: ReactNode; href?: string; size?: "md" | "sm"; className?: string; download?: boolean; onClick?: () => void; external?: boolean }) {
+export function GhostButton({ children, href, size = "md", className, download, onClick, external, target, rel }: { children: ReactNode; href?: string; size?: "md" | "sm"; className?: string; download?: boolean; onClick?: () => void; external?: boolean; target?: string; rel?: string }) {
   const cls = cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-line-strong font-medium uppercase tracking-widest text-foreground transition-colors duration-200 hover:border-signal hover:bg-foreground/5", sizes[size], className);
-  return href ? <a href={href} className={cls} download={download} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>{children}</a> : <button type="button" onClick={onClick} className={cls}>{children}</button>;
+  return href ? <a href={href} className={cls} download={download} target={target ?? (external ? "_blank" : undefined)} rel={rel ?? (external ? "noreferrer" : undefined)}>{children}</a> : <button type="button" onClick={onClick} className={cls}>{children}</button>;
 }
 
 export function ChipTag({ children, className }: { children: ReactNode; className?: string }) {

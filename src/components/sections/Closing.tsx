@@ -1,40 +1,252 @@
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "framer-motion";
 import { Mail, Linkedin, Github, ArrowUp, X, Image as ImageIcon, Trophy, Medal, Award, ScrollText } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import * as THREE from "three";
 import { FadeIn, GhostButton, MonoLabel, PrimaryButton, Tilt, ChipTag } from "@/components/ui/kit";
 import { achievements, certifications, journey, profile } from "@/data/portfolio";
 import resume from "@/assets/KPrajith_resume.pdf.asset.json";
 import { cn } from "@/lib/utils";
 
 const icons = { trophy: Trophy, medal: Medal, badge: Award, plaque: ScrollText };
+const findingDeviceImage = "/Findingdevice.png";
+const componentNamesByKey: Record<string, readonly string[]> = {
+  pcb: ["PCB", "Microcontroller", "GPS_Module", "GSM_Module"],
+  camera: ["Camera_Housing", "Camera_Lens"],
+  antenna: ["Antenna"],
+  battery: ["Battery"],
+  enclosure: ["Enclosure_Lid", "Enclosure_Base", "Status_LED"],
+} as const;
+const productComponents = [
+  { key: "pcb", name: "PCB", description: "Main electronics layout integrating sensing, processing and connectivity modules.", specs: ["Embedded controller", "Wireless circuitry", "Compact assembly"] },
+  { key: "camera", name: "CAMERA", description: "Camera module housed in the device enclosure for image capture.", specs: ["Camera housing", "Optical lens", "Embedded vision"] },
+  { key: "antenna", name: "ANTENNA", description: "Wireless communication path for remote tracking and telemetry exchange.", specs: ["Signal path", "Connectivity interface", "Compact RF design"] },
+  { key: "battery", name: "BATTERY", description: "Power source for the portable tracking unit and embedded monitoring system.", specs: ["Portable power", "Energy storage", "Low-power design"] },
+  { key: "enclosure", name: "ENCLOSURE", description: "Compact enclosure designed for wearable / portable integration and protection.", specs: ["Low-profile enclosure", "Durable body", "Compact form factor"] },
+] as const;
 
-export function Product() {
+function FindingDeviceStage({ exploded, activeComponent }: { exploded: boolean; activeComponent: string }) {
+  const { scene } = useGLTF("/models/Finding_Device_3D_Concept.glb");
+  const model = useMemo(() => scene.clone(true), [scene]);
+  const offsetMapRef = useRef<Record<string, [number, number, number]>>({});
+  const basePositionsRef = useRef<Map<string, THREE.Vector3>>(new Map());
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/models/explode_offsets.json")
+      .then((response) => response.json())
+      .then((offsets) => {
+        if (!cancelled) offsetMapRef.current = offsets as Record<string, [number, number, number]>;
+      })
+      .catch((error) => console.error("Failed to load explode offsets", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    basePositionsRef.current.clear();
+    model.traverse((child) => {
+      if (child.name) {
+        basePositionsRef.current.set(child.name, child.position.clone());
+      }
+    });
+  }, [model]);
+
+  useFrame(() => {
+    const selectedNames = componentNamesByKey[activeComponent as keyof typeof componentNamesByKey] ?? [];
+
+    model.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+
+      const base = basePositionsRef.current.get(child.name);
+      if (!base) return;
+
+      const offset = offsetMapRef.current[child.name] ?? [0, 0, 0];
+      const target = exploded ? base.clone().add(new THREE.Vector3(...offset)) : base.clone();
+      child.position.lerp(target, 0.09);
+
+      const materialCandidates = Array.isArray(child.material) ? child.material : [child.material];
+
+      materialCandidates.forEach((material) => {
+        if (!material || !("emissive" in material)) return;
+        const isSelected = selectedNames.includes(child.name);
+        material.emissive = new THREE.Color(isSelected ? "#5eead4" : "#000000");
+        material.emissiveIntensity = isSelected ? 0.9 : 0;
+      });
+    });
+  });
+
+  return <primitive object={model} scale={1.4} position={[0, -1.2, 0]} />;
+}
+
+function ProductViewer({ onClose }: { onClose: () => void }) {
+  const [activeComponent, setActiveComponent] = useState<(typeof productComponents)[number]["key"]>("pcb");
+  const [exploded, setExploded] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey); document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
+
+  const selectedComponent = productComponents.find((component) => component.key === activeComponent) ?? productComponents[0];
+
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      return;
+    }
+    await document.exitFullscreen();
+  };
+
   return (
-    <section id="product" className="relative z-10 bg-bg2 px-5 py-20 sm:px-8 md:px-10 md:py-28">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-        <FadeIn>
-          <MonoLabel index="05">Flagship product</MonoLabel>
-          <h2 className="hero-heading mt-3 font-display font-bold uppercase leading-none tracking-tight" style={{ fontSize: "clamp(2.2rem,6vw,84px)" }}>Finding Device</h2>
-          <p className="mt-6 max-w-lg text-muted-foreground">[What it does — details coming soon.]</p>
-          <div className="mt-6 flex flex-wrap gap-2">{["[Spec 1]", "[Spec 2]", "[Spec 3]", "[Status]"].map((s) => <ChipTag key={s}>{s}</ChipTag>)}</div>
-          <GhostButton className="mt-8" href="#contact">Ask About It</GhostButton>
-        </FadeIn>
-        <FadeIn delay={0.2}>
-          <Tilt className="aspect-[4/3] w-full">
-            <div className="relative h-full w-full overflow-hidden rounded-[32px] border border-line-strong bg-background">
-              <div className="tech-grid absolute inset-0" />
-              {[["Enclosure", 0, "var(--line-strong)"], ["PCB", 1, "var(--signal)"], ["Antenna", 2, "var(--rf)"], ["Battery", 3, "var(--warn)"]].map(([l, k, c]) => (
-                <motion.div key={l as string} initial={{ y: -60 + (k as number) * 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: (k as number) * 0.2, duration: 0.8 }}
-                  className="absolute left-1/2 flex h-[16%] w-[55%] -translate-x-1/2 items-center justify-end rounded-2xl border bg-panel/70 pr-4"
-                  style={{ top: `${14 + (k as number) * 19}%`, borderColor: c as string, transform: `translateX(-50%) skewX(-12deg)` }}>
-                  <span className="font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground" style={{ transform: "skewX(12deg)" }}>{l as string}</span>
-                </motion.div>
+    <motion.div className="fixed inset-0 z-[80] overflow-y-auto bg-background/85 p-3 backdrop-blur-md sm:p-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+      <motion.div role="dialog" aria-modal aria-label="Finding Device viewer" onClick={(e) => e.stopPropagation()} className="relative mx-auto max-w-6xl rounded-[40px] border border-line-strong bg-bg2 p-4 sm:p-8 md:p-10">
+        <button onClick={onClose} aria-label="Close viewer" className="absolute right-5 top-5 flex size-11 items-center justify-center rounded-full border border-line bg-panel/80"><X className="size-5" /></button>
+
+        <header className="mb-8">
+          <p className="mono-label text-[0.7rem] uppercase tracking-[0.35em] text-signal">// 05 — flagship product</p>
+          <h3 className="mt-4 font-display text-[clamp(2.8rem,6vw,7rem)] font-bold uppercase leading-[0.9] tracking-[-0.06em] text-foreground">FINDING DEVICE</h3>
+          <div className="mt-3 flex flex-wrap gap-2 text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">
+            <span className="rounded-full border border-line px-2 py-1">3D VIEW</span>
+            <span className="rounded-full border border-line px-2 py-1">ROTATE 360°</span>
+            <span className="rounded-full border border-line px-2 py-1">ZOOM</span>
+            <span className="rounded-full border border-line px-2 py-1">EXPLORE</span>
+          </div>
+        </header>
+
+        <div className="grid gap-7 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+          <div className="rounded-[30px] border border-line-strong bg-[#060d15] p-3 shadow-[inset_0_0_0_1px_rgba(148,163,184,0.08)] sm:p-5">
+            <div className="relative overflow-hidden rounded-[28px] border border-line bg-background/30 px-4 py-6">
+              <div className="tech-grid absolute inset-0 opacity-80" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.12),transparent_38%)]" />
+              <div className="absolute left-1/2 top-1/2 h-60 w-60 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/60" />
+              <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/30" />
+
+              <div className="relative mx-auto max-w-[760px]">
+                <div className="relative h-[430px] overflow-hidden rounded-[24px] border border-line bg-[#050d15]">
+                  <Canvas camera={{ position: [0, 0.8, 10.5], fov: 35 }}>
+                    <color attach="background" args={["#050d15"]} />
+                    <ambientLight intensity={1.2} />
+                    <directionalLight position={[6, 7, 6]} intensity={2.4} color="#d9f4ff" />
+                    <spotLight position={[-6, 8, 8]} intensity={1.5} angle={0.35} penumbra={1} color="#7dd3fc" />
+                    <FindingDeviceStage exploded={exploded} activeComponent={activeComponent} />
+                    <OrbitControls enablePan enableZoom enableDamping autoRotate autoRotateSpeed={1.4} minDistance={4} maxDistance={12} target={[0, -0.5, 0]} />
+                  </Canvas>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between gap-3 text-[0.62rem] uppercase tracking-[0.32em] text-muted-foreground">
+                  <span>Drag to orbit / zoom</span>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setExploded((value) => !value)} className="inline-flex items-center gap-2 rounded-full border border-line bg-panel/50 px-2.5 py-1.5 text-[0.58rem] uppercase tracking-[0.24em] text-foreground">
+                      {exploded ? "Assembled" : "Exploded"}
+                    </button>
+                    <button type="button" onClick={toggleFullscreen} className="inline-flex items-center gap-2 rounded-full border border-line bg-panel/50 px-2.5 py-1.5 text-[0.58rem] uppercase tracking-[0.24em] text-foreground">
+                      Fullscreen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              {[{ label: "Front" }, { label: "Right" }, { label: "Back" }, { label: "Left" }].map((thumb, index) => (
+                <button key={thumb.label} type="button" className={`flex items-center justify-center rounded-full border px-3 py-1.5 font-mono text-[0.56rem] uppercase tracking-[0.18em] ${index === 0 ? "border-signal bg-signal/8 text-signal" : "border-line bg-panel/70 text-muted-foreground"}`}>
+                  {thumb.label}
+                </button>
               ))}
             </div>
-          </Tilt>
-        </FadeIn>
-      </div>
-    </section>
+          </div>
+
+          <aside className="rounded-[30px] border border-line-strong bg-background/50 p-4 sm:p-5">
+            <p className="mono-label text-[0.68rem] uppercase tracking-[0.28em] text-signal">Product Details</p>
+            <h4 className="mt-4 font-display text-3xl font-bold uppercase tracking-[-0.06em] text-foreground">Finding Device</h4>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">A compact IoT-based tracking device designed for real-time location monitoring and connected asset tracking.</p>
+
+            <div className="mt-6 space-y-5">
+              <div>
+                <p className="mono-label text-[0.62rem] uppercase tracking-[0.24em] text-muted-foreground">Application</p>
+                <div className="mt-2 flex flex-wrap gap-2 text-[0.7rem] uppercase tracking-[0.12em] text-foreground">
+                  <span className="rounded-full border border-line px-2.5 py-1.5">Asset Tracking</span>
+                  <span className="rounded-full border border-line px-2.5 py-1.5">FLEET MANAGEMENT</span>
+                  <span className="rounded-full border border-line px-2.5 py-1.5">IoT Monitoring</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="mono-label text-[0.62rem] uppercase tracking-[0.24em] text-muted-foreground">Technology</p>
+                <div className="mt-2 flex flex-wrap gap-2 text-[0.7rem] uppercase tracking-[0.12em] text-foreground">
+                  {[
+                    "MICROCONTROLLER",
+                    "CAMERA",
+                    "GPS",
+                    "ML MODEL",
+                    "Cellular",
+                    "IoT",
+                  ].map((tag) => (
+                    <span key={tag} className="rounded-full border border-line px-2.5 py-1.5">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-[24px] border border-line-strong bg-panel/40 p-3">
+              <p className="mono-label text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">Components</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {productComponents.map((component) => (
+                  <button key={component.key} type="button" onClick={() => setActiveComponent(component.key)} className={`rounded-full border px-3 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.18em] transition-colors ${activeComponent === component.key ? "border-signal bg-signal/10 text-signal" : "border-line bg-background/60 text-foreground"}`}>
+                    {component.name}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-[18px] border border-line bg-background/60 p-3">
+                <p className="mono-label text-[0.58rem] uppercase tracking-[0.24em] text-signal">{selectedComponent.name}</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">{selectedComponent.description}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedComponent.specs.map((spec) => <span key={spec} className="rounded-full border border-line px-2 py-1 text-[0.56rem] uppercase tracking-[0.12em] text-muted-foreground">{spec}</span>)}
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export function Product() {
+  const [viewerOpen, setViewerOpen] = useState(false);
+
+  return (
+    <>
+      <section id="product" className="relative z-10 bg-bg2 px-5 py-20 sm:px-8 md:px-10 md:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
+          <FadeIn>
+            <MonoLabel index="05">Flagship product</MonoLabel>
+            <h2 className="hero-heading mt-3 font-display font-bold uppercase leading-none tracking-tight" style={{ fontSize: "clamp(2.2rem,6vw,84px)" }}>Finding Device</h2>
+            <p className="mt-6 max-w-lg text-muted-foreground">A compact connected tracking device built for asset visibility, real-time monitoring and practical IoT deployment.</p>
+            <div className="mt-6 flex flex-wrap gap-2">{["MICROCONTROLLER", "GPS", "CAMERA","Cellular", "IoT"].map((s) => <ChipTag key={s}>{s}</ChipTag>)}</div>
+            <button type="button" onClick={() => setViewerOpen(true)} className="mt-8 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-line-strong px-8 py-3 font-medium uppercase tracking-widest text-foreground transition-colors duration-200 hover:border-signal hover:bg-foreground/5">Ask About It</button>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <button type="button" onClick={() => setViewerOpen(true)} className="block w-full text-left">
+              <Tilt className="aspect-[4/3] w-full">
+                <div className="relative h-full w-full overflow-hidden rounded-[32px] border border-line-strong bg-background">
+                  <div className="tech-grid absolute inset-0" />
+                  <img src={findingDeviceImage} alt="Finding Device product" className="absolute inset-0 h-full w-full object-contain p-3 sm:p-6" />
+                </div>
+              </Tilt>
+            </button>
+          </FadeIn>
+        </div>
+      </section>
+      <AnimatePresence>{viewerOpen && <ProductViewer onClose={() => setViewerOpen(false)} />}</AnimatePresence>
+    </>
   );
 }
 
@@ -42,29 +254,49 @@ export function Achievements() {
   const [sel, setSel] = useState<number | null>(null);
   return (
     <section id="achievements" className="relative z-10 bg-background px-5 py-20 sm:px-8 md:px-10 md:py-32">
-      <FadeIn className="mb-16 text-center"><MonoLabel index="06">Results</MonoLabel><h2 className="hero-heading section-heading mt-3">Achievements</h2></FadeIn>
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" style={{ perspective: 1400 }}>
-        {achievements.map((a, i) => {
-          const Icon = icons[a.kind];
-          return (
-            <FadeIn key={a.title} delay={i * 0.1}>
-              <Tilt>
-                <button onClick={() => setSel(i)} className="glass group flex h-full w-full flex-col items-center gap-5 rounded-[32px] p-8 text-center transition-colors hover:border-signal/50">
-                  <motion.div animate={{ rotateY: [-12, 12, -12] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: i }}
-                    className={cn("flex size-24 items-center justify-center rounded-full shadow-2xl", i < 2 ? "metal-gold" : "metal-silver")}>
-                    <Icon className="size-10 text-background" strokeWidth={1.6} />
-                  </motion.div>
-                  <p className="font-display text-2xl font-bold">{a.title}</p>
-                  <p className="text-sm text-muted-foreground">{a.detail}</p>
-                </button>
-              </Tilt>
-            </FadeIn>
-          );
-        })}
-      </div>
-      <div className="mx-auto mt-10 grid max-w-6xl grid-cols-3 gap-3">
-        {["Startup expo 1", "Startup expo 2", "Startup expo 3"].map((l) => (
-          <div key={l} className="flex aspect-[16/9] items-center justify-center gap-2 rounded-2xl border border-dashed border-line-strong text-muted-foreground"><ImageIcon className="size-4" /><span className="hidden font-mono text-[0.65rem] uppercase tracking-widest sm:inline">{l}</span></div>
+      <FadeIn className="mb-16 text-center"><MonoLabel index="07">Results</MonoLabel><h2 className="hero-heading section-heading mt-3">Achievements</h2></FadeIn>
+      <div className="mx-auto max-w-6xl" style={{ perspective: 1400 }}>
+        {[achievements.slice(0, 4), achievements.slice(4)].map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className={`flex w-full flex-wrap justify-center gap-5 ${rowIndex === 1 ? "mt-6" : ""}`}
+          >
+            {row.map((a, cardIndex) => {
+              const i = rowIndex === 0 ? cardIndex : cardIndex + 4;
+              const Icon = icons[a.kind];
+              return (
+                <FadeIn
+                  key={`${a.title}-${i}`}
+                  delay={i * 0.1}
+                  className="w-full min-[768px]:w-[calc((100%_-_20px)/2)] min-[1200px]:w-[calc((100%_-_60px)/4)]"
+                >
+                  <Tilt>
+                    <button
+                      onClick={() => setSel(i)}
+                      className="glass group flex h-auto min-h-[274px] w-full flex-col items-center gap-5 rounded-[32px] p-8 text-center transition-colors hover:border-signal/50"
+                    >
+                      <motion.div
+                        animate={{ rotateY: [-12, 12, -12] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: i }}
+                        className={cn(
+                          "flex size-24 items-center justify-center rounded-full shadow-2xl",
+                          i < 2 ? "metal-gold" : "metal-silver",
+                        )}
+                      >
+                        <Icon className="size-10 text-background" strokeWidth={1.6} />
+                      </motion.div>
+                      <div className="flex flex-col items-center gap-2">
+                        <p className="font-display text-2xl font-bold leading-tight">{a.title}</p>
+                        <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                          {a.detail}
+                        </p>
+                      </div>
+                    </button>
+                  </Tilt>
+                </FadeIn>
+              );
+            })}
+          </div>
         ))}
       </div>
       <AnimatePresence>
@@ -147,7 +379,8 @@ export function Resume() {
           <h2 className="mt-2 font-display text-3xl font-bold uppercase md:text-5xl">The full spec sheet</h2>
           <p className="mt-3 text-muted-foreground">Embedded firmware, sensor-driven fault detection, wireless systems and computer vision on hardware.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
-            <PrimaryButton href={resume.url}>Download PDF</PrimaryButton>
+            <PrimaryButton href={resume.url} target="_blank" rel="noreferrer">View PDF</PrimaryButton>
+            <GhostButton href={resume.url} download>Download PDF</GhostButton>
             <GhostButton href={profile.linkedin} external>View on LinkedIn</GhostButton>
           </div>
         </div>

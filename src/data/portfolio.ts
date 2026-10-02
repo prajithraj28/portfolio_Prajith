@@ -150,8 +150,10 @@ export const projects: {
 
 export const experience = [
   {
-    company: "Incax Technology Pvt. Ltd., Chennai",
-    role: "Embedded Systems & IoT Intern",
+    company: "Incax Technology Pvt. Ltd.",
+    location: "Chennai, Tamil Nadu",
+    department: "R&D Department",
+    role: "Embedded Systems Engineer Intern",
     dates: "Oct 2025 – Apr 2026",
     chips: ["ESP32", "Firmware", "Charging system", "Sensor data", "Energy management", "Cloud sync"],
     bullets: [
@@ -160,10 +162,12 @@ export const experience = [
     ],
   },
   {
-    company: "HPRCSELab, IIITDM Kancheepuram",
+    company: "HPRCSE Lab, IIITDM Kancheepuram",
+    location: "Kancheepuram, Tamil Nadu",
+    department: "R&D Department",
     role: "Embedded Systems Intern",
     dates: "Jun 2025 – Jul 2025",
-    chips: ["ESP32", "Power measurement", "Fault detection", "Relay control", "Real-time monitoring"],
+    chips: ["ESP32 DEV KIT", "Power measurement", "Fault detection", "Relay control", "Real-time monitoring"],
     bullets: [
       "IoT Digital Power Meter holding ±2% accuracy across 3 load types.",
       "Over/undervoltage detection with relay cutoff under 200 ms; ~60% less manual inspection.",
@@ -172,10 +176,13 @@ export const experience = [
 ];
 
 export const achievements = [
-  { kind: "trophy", title: "1st Prize", detail: "CAG Ideathon (12-hour national hackathon)" },
-  { kind: "medal", title: "2nd Place", detail: "Becrez'25 National Hackathon (₹5,000 prize + ₹24,000 in credits)" },
-  { kind: "badge", title: "26th Rank", detail: "IIT Bombay International Hackathon 2026" },
-  { kind: "plaque", title: "Shortlisted", detail: "Asia-Level Entrepreneurship Hackathon, IIT Bombay" },
+  { kind: "trophy", title: "1st Prize", detail: "CAG Ideathon\n12-Hour National-Level Hackathon" },
+  { kind: "medal", title: "2nd Place", detail: "Becrez'25 National Hackathon\n₹5,000 Prize + ₹24,000 in Credits" },
+  { kind: "badge", title: "26th Rank", detail: "IIT Bombay International Hackathon 2026\nInternational Hackathon – IIT Bombay" },
+  { kind: "trophy", title: "2nd Place", detail: "Shark Tank-Style Business Idea Competition\nSecured 2nd place in a startup/business idea pitching competition" },
+  { kind: "plaque", title: "Shortlisted", detail: "Asia-Level Entrepreneurship Hackathon – IIT Bombay\nShortlisted for an Asia-Level Entrepreneurship Hackathon at IIT Bombay" },
+  { kind: "badge", title: "Top 20", detail: "Tamil Nadu Startup Selection\nTop 20 Startup Teams in Tamil Nadu" },
+  { kind: "trophy", title: "3+ Wins", detail: "National-Level Technical Symposiums\nWon 1st place in 3+ National-Level Technical Symposium Events" },
 ] as const;
 
 export const certifications = [

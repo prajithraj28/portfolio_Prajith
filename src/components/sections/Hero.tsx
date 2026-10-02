@@ -1,7 +1,8 @@
-import { FadeIn, GhostButton, Magnet, PrimaryButton } from "@/components/ui/kit";
+import { FadeIn, Magnet, PrimaryButton } from "@/components/ui/kit";
 import { marqueeRow1, marqueeRow2 } from "@/data/portfolio";
-import portrait from "@/assets/prajith-portrait.jpg.asset.json";
 import { useEffect, useRef, useState } from "react";
+
+const portrait = "/prajith-portrait.jpg";
 
 const chips = [
   { label: "ESP32", pos: "left-[4%] top-[34%] sm:left-[18%]", mobile: true },
@@ -18,7 +19,7 @@ export function Hero() {
       </FadeIn>
       <div className="relative mt-6 overflow-hidden sm:mt-4 md:mt-2">
         <FadeIn delay={0.15} y={40}>
-          <h1 className="hero-heading w-full whitespace-nowrap text-center text-[13vw] font-bold uppercase leading-none tracking-tight sm:text-[12vw] md:text-[11vw] lg:text-[10.5vw]">
+          <h1 className="hero-heading relative z-20 w-full whitespace-nowrap text-center text-[13vw] font-bold uppercase leading-none tracking-tight sm:text-[12vw] md:text-[11vw] lg:text-[10.5vw]">
             K. Prajith Raj
           </h1>
         </FadeIn>
@@ -26,15 +27,15 @@ export function Hero() {
       </div>
 
       {/* Portrait */}
-      <div className="absolute left-1/2 top-1/2 z-10 w-[240px] -translate-x-1/2 -translate-y-1/2 sm:top-auto sm:bottom-0 sm:w-[340px] sm:translate-y-0 md:w-[400px] lg:w-[440px]">
+      <div className="absolute left-1/2 top-[66%] z-0 w-[180px] -translate-x-1/2 sm:top-[62%] sm:w-[240px] md:top-[60%] md:w-[300px] lg:w-[330px]">
         <div aria-hidden className="absolute left-1/2 top-[30%] -z-10 size-[120%] -translate-x-1/2 -translate-y-1/2">
           <div className="animate-rf absolute inset-0 rounded-full border border-rf/60" />
           <div className="animate-rf absolute inset-0 rounded-full border border-rf/40" style={{ animationDelay: "2s" }} />
         </div>
         <FadeIn delay={0.6} y={30}>
           <Magnet>
-            <div className="overflow-hidden rounded-[32px] [mask-image:linear-gradient(to_bottom,black_65%,transparent)]">
-              <img src={portrait.url} alt="K. Prajith Raj in a black blazer" className="aspect-[3/4] w-full object-cover object-top" />
+            <div className="overflow-hidden rounded-[28px] border border-line-strong/80 bg-panel/60 shadow-[0_0_30px_rgba(53,224,180,0.12)]">
+              <img src={portrait} alt="K. Prajith Raj" className="aspect-[3/4] w-full object-cover object-top opacity-95" />
             </div>
           </Magnet>
         </FadeIn>
@@ -54,9 +55,8 @@ export function Hero() {
             Building connected systems from sensors and firmware to wireless communication and real-time applications.
           </p>
         </FadeIn>
-        <FadeIn delay={0.5} y={20} className="flex flex-col items-end gap-3 lg:flex-row">
-          <PrimaryButton href="#work">Explore My Work</PrimaryButton>
-          <GhostButton href="#contact" className="hidden sm:inline-flex">Contact Me</GhostButton>
+        <FadeIn delay={0.5} y={20} className="flex items-end justify-end">
+          <PrimaryButton href="#work" className="whitespace-nowrap">Explore My Work</PrimaryButton>
         </FadeIn>
       </div>
       <div aria-hidden className="absolute bottom-6 left-1/2 z-20 hidden h-12 w-px -translate-x-1/2 bg-line-strong lg:block">

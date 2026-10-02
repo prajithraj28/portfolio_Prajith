@@ -50,8 +50,8 @@ export function Navbar() {
   return (
     <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="fixed inset-x-0 top-0 z-50 px-4 pt-5 md:px-10">
       <nav className={cn("mx-auto flex max-w-7xl items-center justify-between rounded-full border border-line px-3 py-2 backdrop-blur-xl transition-colors md:px-4", scrolled ? "bg-background/85" : "bg-background/40")}>
-        <a href="#top" aria-label="Home" className="relative flex h-9 w-12 items-center justify-center rounded-md border border-signal/60 font-mono text-sm font-medium text-signal">
-          KP
+        <a href="#top" aria-label="Home" className="relative flex h-9 w-12 items-center justify-center overflow-hidden rounded-md border border-signal/60 bg-transparent p-1 font-mono text-sm font-medium text-signal">
+          <img src="/assets/prajith-logo.png" alt="K. Prajith Raj" className="h-full w-full rounded-[inherit] object-contain" />
           <span className="absolute -left-1.5 top-2 h-px w-1.5 bg-signal/60" /><span className="absolute -left-1.5 bottom-2 h-px w-1.5 bg-signal/60" />
           <span className="absolute -right-1.5 top-2 h-px w-1.5 bg-signal/60" /><span className="absolute -right-1.5 bottom-2 h-px w-1.5 bg-signal/60" />
         </a>

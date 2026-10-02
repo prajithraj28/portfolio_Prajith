@@ -1,0 +1,77 @@
+{
+ "Enclosure_Lid": [
+  0,
+  3.2,
+  0
+ ],
+ "Camera_Housing": [
+  0,
+  3.2,
+  0
+ ],
+ "Camera_Lens": [
+  0,
+  3.2,
+  0
+ ],
+ "Status_LED": [
+  0,
+  3.2,
+  0
+ ],
+ "Mounting_Screw_1": [
+  0,
+  4.6,
+  0
+ ],
+ "Mounting_Screw_2": [
+  0,
+  4.6,
+  0
+ ],
+ "Mounting_Screw_3": [
+  0,
+  4.6,
+  0
+ ],
+ "Mounting_Screw_4": [
+  0,
+  4.6,
+  0
+ ],
+ "Microcontroller": [
+  0,
+  2.6,
+  0
+ ],
+ "GPS_Module": [
+  0,
+  2.2,
+  0
+ ],
+ "GSM_Module": [
+  0,
+  2.0,
+  0
+ ],
+ "Antenna": [
+  2.2,
+  1.4,
+  0
+ ],
+ "PCB": [
+  0,
+  1.2,
+  0
+ ],
+ "Battery": [
+  0,
+  0.2,
+  0
+ ],
+ "Enclosure_Base": [
+  0,
+  -1.6,
+  0
+ ]
+}

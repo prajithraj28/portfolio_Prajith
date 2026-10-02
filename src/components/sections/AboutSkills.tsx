@@ -28,21 +28,21 @@ export function About() {
       <div className="relative flex flex-col items-center gap-10 sm:gap-14 md:gap-16">
         <FadeIn y={40}><h2 className="hero-heading text-center font-bold uppercase leading-none tracking-tight" style={{ fontSize: "clamp(3rem,12vw,160px)" }}>About me</h2></FadeIn>
         <AnimatedText
-          className="max-w-[560px] text-center font-medium leading-relaxed text-foreground"
-          text="I am an Electronics & Communication Engineering student at St. Joseph's Institute of Technology, Chennai, who enjoys building real-world systems that connect hardware, firmware, communication and software. I work across ESP32, STM32 and Arduino, with I²C, SPI and UART interfacing, and I iterate in hardware-in-the-loop environments."
+          className="max-w-[700px] text-center text-lg font-medium leading-relaxed text-foreground md:text-xl"
+          text="I am an Electronics & Communication Engineering student at St. Joseph's Institute of Technology, Chennai, focused on building real-world systems that connect hardware, firmware, communication and software. I work across ESP32, STM32, Arduino and Raspberry Pi, with experience in I²C, SPI, UART and QNX,Proteus supported by hands-on industry-level exposure through embedded systems internships and hardware projects."
         />
       </div>
       <div className="relative flex w-full max-w-4xl flex-col items-center gap-12">
         <FlowDiagram nodes={["Hardware", "Firmware", "Communication", "Software"]} className="w-full" />
         <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4">
-          {[["B.E. ECE", "2023–2027"], ["CGPA", "7.8/10"], ["Internships", "2"], ["Hackathon results", "4"]].map(([k, v]) => (
+          {[["B.E. ECE", "2023–2027"], ["CGPA", "7.9/10"], ["Internships", "2"], ["Hackathon results", "5+"]].map(([k, v]) => (
             <div key={k} className="bg-background/90 p-5 text-center">
               <p className="font-display text-3xl font-bold text-foreground"><CountUp value={v ?? ""} /></p>
               <p className="mono-label mt-1">{k}</p>
             </div>
           ))}
         </div>
-        <GhostButton href={resume.url} download>Download Resume</GhostButton>
+        <GhostButton href={resume.url} target="_blank" rel="noreferrer">View Resume</GhostButton>
       </div>
     </section>
   );
