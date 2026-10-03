@@ -4,8 +4,10 @@ import { useRef, useState } from "react";
 import { AnimatedText, ChipTag, CountUp, FadeIn, FlowDiagram, GhostButton, MonoLabel, Tilt } from "@/components/ui/kit";
 import { PcbBoard, SkillVisual } from "@/components/scenes";
 import { skillGroups, type SkillViz } from "@/data/portfolio";
-import resume from "@/assets/KPrajith_resume.pdf.asset.json";
 import { cn } from "@/lib/utils";
+
+const RESUME_URL = "/resume.pdf";
+const RESUME_VIEW_URL = "/resume-view.html";
 
 const floatLabels = [
   ["ESP32", "left-[4%] top-[12%]", -80], ["STM32", "left-[10%] top-[30%]", -80], ["Arduino", "left-[3%] top-[52%]", -80],
@@ -42,7 +44,7 @@ export function About() {
             </div>
           ))}
         </div>
-        <GhostButton href={resume.url} target="_blank" rel="noreferrer">View Resume</GhostButton>
+        <GhostButton href={RESUME_VIEW_URL} target="_blank" rel="noreferrer">View Resume</GhostButton>
       </div>
     </section>
   );

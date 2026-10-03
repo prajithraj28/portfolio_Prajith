@@ -6,8 +6,10 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import * as THREE from "three";
 import { FadeIn, GhostButton, MonoLabel, PrimaryButton, Tilt, ChipTag } from "@/components/ui/kit";
 import { achievements, certifications, journey, profile } from "@/data/portfolio";
-import resume from "@/assets/KPrajith_resume.pdf.asset.json";
 import { cn } from "@/lib/utils";
+
+const RESUME_URL = "/resume.pdf";
+const RESUME_VIEW_URL = "/resume-view.html";
 
 const icons = { trophy: Trophy, medal: Medal, badge: Award, plaque: ScrollText };
 const findingDeviceImage = "/Findingdevice.png";
@@ -370,7 +372,7 @@ export function Resume() {
   return (
     <section id="resume" className="relative z-10 bg-background px-5 py-20 sm:px-8 md:px-10">
       <FadeIn className="glass mx-auto flex max-w-5xl flex-col items-center gap-8 rounded-[40px] p-6 md:flex-row md:p-10">
-        <a href={resume.url} target="_blank" rel="noreferrer" className="relative block aspect-[1/1.3] w-40 shrink-0 overflow-hidden rounded-2xl border border-line-strong bg-lab p-4">
+        <a href={RESUME_VIEW_URL} target="_blank" rel="noreferrer" className="relative block aspect-[1/1.3] w-40 shrink-0 overflow-hidden rounded-2xl border border-line-strong bg-lab p-4">
           {Array.from({ length: 12 }).map((_, i) => <div key={i} className="mb-2 h-1.5 rounded bg-lab-ink/15" style={{ width: `${40 + ((i * 37) % 60)}%` }} />)}
           <span className="absolute bottom-3 left-3 font-mono text-[0.6rem] uppercase tracking-widest text-lab-ink">PDF // 1 page</span>
         </a>
@@ -379,8 +381,8 @@ export function Resume() {
           <h2 className="mt-2 font-display text-3xl font-bold uppercase md:text-5xl">The full spec sheet</h2>
           <p className="mt-3 text-muted-foreground">Embedded firmware, sensor-driven fault detection, wireless systems and computer vision on hardware.</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
-            <PrimaryButton href={resume.url} target="_blank" rel="noreferrer">View PDF</PrimaryButton>
-            <GhostButton href={resume.url} download>Download PDF</GhostButton>
+            <PrimaryButton href={RESUME_VIEW_URL} target="_blank" rel="noreferrer">View PDF</PrimaryButton>
+            <GhostButton href={RESUME_URL} download="Prajith_Raj_Resume.pdf">Download PDF</GhostButton>
             <GhostButton href={profile.linkedin} external>View on LinkedIn</GhostButton>
           </div>
         </div>
@@ -395,10 +397,36 @@ export function Contact() {
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const name = String(f.get("name") || "").trim(), email = String(f.get("email") || "").trim(), msg = String(f.get("message") || "").trim();
-    if (!name || !/^\S+@\S+\.\S+$/.test(email) || msg.length < 5) { setErr("Please fill in your name, a valid email and a message."); setState("error"); return; }
+    const name = String(f.get("name") || "").trim();
+    const email = String(f.get("email") || "").trim();
+    const msg = String(f.get("message") || "").trim();
+
+    if (!name) {
+      setErr("Please enter your name.");
+      setState("error");
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setErr("Please enter a valid email address.");
+      setState("error");
+      return;
+    }
+
+    if (!msg) {
+      setErr("Please enter a message.");
+      setState("error");
+      return;
+    }
+
     setState("sending");
-    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(`Portfolio message from ${name}`)}&body=${encodeURIComponent(`${msg}\n\n— ${name} (${email})`)}`;
+    setErr("");
+
+    const subject = `Portfolio Contact — ${name}`;
+    const body = `Name: ${name}\n\nEmail: ${email}\n\nMessage:\n${msg}`;
+    const mailto = `mailto:kprajithraj@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto;
     setTimeout(() => setState("done"), 600);
   };
   const rows = [
@@ -432,7 +460,7 @@ export function Contact() {
               <textarea name="message" rows={5} maxLength={2000} required className="rounded-2xl border border-line-strong bg-background/60 p-4 text-foreground outline-none transition-colors focus:border-signal" />
             </label>
             {state === "error" && <p role="alert" className="text-sm text-warn">{err}</p>}
-            {state === "done" && <p role="status" className="font-mono text-sm text-signal">Signal received. Your email app should open to send it.</p>}
+            {state === "done" && <p role="status" className="font-mono text-sm text-signal">Your email application is opening...</p>}
             <PrimaryButton type="submit" disabled={state === "sending"} className="mt-2 self-start">{state === "sending" ? "Transmitting…" : "Send Message"}</PrimaryButton>
           </form>
         </div>

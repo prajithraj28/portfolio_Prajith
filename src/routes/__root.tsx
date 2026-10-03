@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportPortfolioRuntimeError } from "../lib/error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -38,7 +38,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportPortfolioRuntimeError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -77,11 +77,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "K. Prajith Raj -- Electronics & Communication Engineer" },
-      { name: "description", content: "Portfolio of K. Prajith Raj, ECE and embedded systems engineer." },
+      { title: "K. Prajith Raj | ECE Engineer" },
+      { name: "description", content: "Portfolio of K. Prajith Raj, ECE engineer focused on embedded systems, IoT, and wireless communication." },
       { name: "author", content: "K. Prajith Raj" },
+      { name: "application-name", content: "K. Prajith Raj" },
+      { name: "theme-color", content: "#050b12" },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: "K. Prajith Raj | ECE Engineer" },
+      { property: "og:description", content: "Portfolio of K. Prajith Raj, ECE engineer focused on embedded systems, IoT, and wireless communication." },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "K. Prajith Raj | ECE Engineer" },
+      { name: "twitter:description", content: "Portfolio of K. Prajith Raj, ECE engineer focused on embedded systems, IoT, and wireless communication." },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -89,6 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/assets/prajith-logo.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/assets/prajith-logo.png" },
     ],
   }),
   shellComponent: RootShell,
